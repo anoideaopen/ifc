@@ -23,3 +23,17 @@ go.work.sum
 
 # env file
 .env
+
+# MacOS stuff
+.DS_Store
+
+# Editors Stuff
+*.swp
+*.swo
+*.idea
+.vscode/
+
+# Dependency directories (remove the comment below to include it)
+vendor/
+
+.ash_history
