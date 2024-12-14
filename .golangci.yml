@@ -1,0 +1,111 @@
+run:
+  # The default concurrency value is the number of available CPU.
+  go: '1.23'
+  concurrency: 4
+  timeout: 5m
+  tests: false
+linters:
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    - asciicheck
+    - bodyclose
+    - dogsled
+    - errorlint
+    - copyloopvar
+    - misspell
+    - nestif
+    - noctx
+    - nolintlint
+    - prealloc
+    - stylecheck
+    - gci
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - gofmt
+    - gofumpt
+    - goheader
+    - goimports
+    - gomodguard
+    - goprintffuncname
+    - gosec
+    - tparallel
+    - unconvert
+    - unparam
+    - whitespace
+    - revive
+    - usestdlibvars
+    - tenv
+    - promlinter
+    - nosprintfhostport
+    - nilnil
+    - loggercheck
+    - grouper
+    - errname
+    - decorder
+    - durationcheck
+    - nilerr
+    - forcetypeassert
+    - interfacebloat
+    - contextcheck
+    - loggercheck
+    - reassign
+    - testableexamples
+    - dupword
+    - gocheckcompilerdirectives
+    - perfsprint
+    - testifylint
+    - sloglint
+    - protogetter
+    - fatcontext
+    - recvcheck
+    - iface
+#    - spancheck
+#    - intrange # (Go 1.22+)
+#    - copyloopvar # (Go 1.22+)
+  disable:
+    - godot
+    - wsl
+    - lll
+    - paralleltest
+    - godox
+    - testpackage
+    - nlreturn
+    - rowserrcheck
+    - sqlclosecheck
+    - ireturn
+    - wastedassign
+    - depguard
+    - tagliatelle
+    - gosmopolitan
+    - mirror
+    - tagalign
+    - zerologlint
+    - dupl
+    - funlen
+linters-settings:
+  gosec:
+    excludes:
+      - 'G107'
+      - 'G402'
+      - 'G404'
+      - 'G115'
+  revive:
+    ignore-generated-header: true
+    rules:
+      - name: dot-imports
+        severity: warning
+        disabled: false
+        arguments:
+          - allowedPackages: ["github.com/onsi/gomega", "github.com/onsi/ginkgo/v2"]
+  stylecheck:
+    dot-import-whitelist:
+      - github.com/onsi/gomega
+      - github.com/onsi/ginkgo/v2
