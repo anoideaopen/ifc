@@ -3,6 +3,8 @@ package proc
 import (
 	"context"
 	"fmt"
+	"os"
+	"path/filepath"
 
 	"github.com/anoideaopen/ifc/blocks"
 	"github.com/anoideaopen/ifc/utils"
@@ -14,10 +16,10 @@ import (
 	"github.com/hyperledger/fabric-sdk-go/pkg/core/config"
 	"github.com/hyperledger/fabric-sdk-go/pkg/fab/events/deliverclient/seek"
 	"github.com/hyperledger/fabric-sdk-go/pkg/fabsdk"
+	"github.com/syndtr/goleveldb/leveldb"
 )
 
 const (
-	beginBlock    = 0
 	sizeOfEvtChan = 200
 )
 
@@ -53,6 +55,22 @@ func Process(
 		panic(err)
 	}
 
+	dbStatePath, _ := filepath.Abs(utils.DefaultDB)
+	dbState, err := leveldb.OpenFile(dbStatePath, nil)
+	if err != nil {
+		_ = os.RemoveAll(dbStatePath)
+
+		err = fmt.Errorf("couldn't open state db: %w", err)
+		panic(err)
+	}
+
+	defer func(db *leveldb.DB) {
+		if err = db.Close(); err != nil {
+			err = fmt.Errorf("couldn't close state db: %w", err)
+			panic(err)
+		}
+	}(dbState)
+
 	for {
 		hlfCfgFrom := config.FromFile(conn1)
 
@@ -64,6 +82,7 @@ func Process(
 			}
 			defer sdk.Close()
 
+			beginBlock := utils.Block(dbState)
 			evnCli := eventClient(sdk, org1, user1, utils.ChannelACL, beginBlock)
 
 			registration, eventChannel, err := evnCli.RegisterBlockEvent()
@@ -85,7 +104,7 @@ func Process(
 
 			go listen(ctx, eventChannel, evtBuf)
 
-			return rest(ctx, evtBuf, channelClient)
+			return rest(ctx, evtBuf, channelClient, dbState, beginBlock)
 		}()
 		if err == nil {
 			return
@@ -169,28 +188,32 @@ func rest(
 	ctx context.Context,
 	evtBuf <-chan *fab.BlockEvent,
 	chClient *channel.Client,
+	db *leveldb.DB,
+	beginBlock uint64,
 ) error {
-	var breaking bool
-
 	for {
 		select {
 		case <-ctx.Done():
 			return nil
 
 		case e := <-evtBuf:
-			err := RequestBlock(e.Block, chClient)
+			if e.Block.GetHeader().GetNumber() <= beginBlock {
+				continue
+			}
+
+			err := RequestBlock(e.Block, chClient, db)
 			if err != nil {
 				return err
 			}
-
-			if breaking {
-				return nil
+			err = utils.SetBlock(db, e.Block.GetHeader().GetNumber())
+			if err != nil {
+				return err
 			}
 		}
 	}
 }
 
-func RequestBlock(b *common.Block, chClient *channel.Client) error {
+func RequestBlock(b *common.Block, chClient *channel.Client, db *leveldb.DB) error {
 	txFilter := b.GetMetadata().GetMetadata()[common.BlockMetadataIndex_TRANSACTIONS_FILTER]
 
 	for j, tx := range b.GetData().GetData() {
@@ -228,6 +251,13 @@ func RequestBlock(b *common.Block, chClient *channel.Client) error {
 		err = TxsProc(pTx.GetActions(), chClient)
 		if err != nil {
 			return err
+		}
+
+		if len(chHeader.GetTxId()) != 0 {
+			err = utils.SetTxID(db, chHeader.GetTxId())
+			if err != nil {
+				return err
+			}
 		}
 	}
 
