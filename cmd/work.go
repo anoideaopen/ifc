@@ -12,8 +12,8 @@ import (
 )
 
 var workBlockCmd = &cobra.Command{
-	Use:   "height",
-	Short: "Get height block",
+	Use:   "work",
+	Short: "start a work process",
 	Run: func(cmd *cobra.Command, args []string) {
 		if utils.ConnectionFile1 == "" || utils.Org1 == "" || utils.User1 == "" ||
 			utils.ConnectionFile2 == "" || utils.Org2 == "" || utils.User2 == "" {

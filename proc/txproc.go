@@ -3,6 +3,7 @@ package proc
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/anoideaopen/ifc/blocks"
@@ -19,11 +20,11 @@ const (
 
 var (
 	methods = []string{
-		"ChangeMultisigPublicKey", "AddMultisigWithBase58Signature", "AddMultisig",
-		"DelFromList", "AddToList", "RemoveAdditionalKey", "AddAdditionalKey", "SetAccountInfo",
-		"RemoveAddressFromNominee", "AddAddressForNominee", "RemoveRights", "AddRights",
-		"AddUser", "AddUserWithPublicKeyType", "Setkyc", "ChangePublicKeyWithBase58Signature",
-		"ChangePublicKey",
+		"changeMultisigPublicKey", "addMultisigWithBase58Signature", "addMultisig",
+		"delFromList", "addToList", "removeAdditionalKey", "addAdditionalKey", "setAccountInfo",
+		"removeAddressFromNominee", "addAddressForNominee", "removeRights", "addRights",
+		"addUser", "addUserWithPublicKeyType", "setkyc", "changePublicKeyWithBase58Signature",
+		"changePublicKey",
 	}
 	mapMethods map[string]bool
 )
@@ -75,6 +76,12 @@ func TxsProc(
 				break
 			}
 
+			if strings.Contains(err.Error(), "already exists") ||
+				strings.Contains(err.Error(), "incorrect nonce") {
+				err = nil
+				break
+			}
+
 			time.Sleep(time.Second)
 		}
 
@@ -83,7 +90,7 @@ func TxsProc(
 			panic(err)
 		}
 
-		if resp.ChaincodeStatus != http.StatusOK {
+		if resp.ChaincodeStatus != http.StatusOK && resp.ChaincodeStatus != 0 {
 			err = fmt.Errorf("invalid response status: %d", resp.ChaincodeStatus)
 			panic(err)
 		}
