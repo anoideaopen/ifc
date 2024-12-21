@@ -28,7 +28,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(
 		&utils.ConnectionFile1,
 		"connection1",
-		"c1",
+		"c",
 		"",
 		"file connection to HLF",
 	)
@@ -36,7 +36,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(
 		&utils.Org1,
 		"org1",
-		"o1",
+		"o",
 		"",
 		"organization HLF",
 	)
@@ -44,7 +44,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(
 		&utils.User1,
 		"user1",
-		"u1",
+		"u",
 		"",
 		"user HLF",
 	)
@@ -52,7 +52,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(
 		&utils.ConnectionFile2,
 		"connection2",
-		"c2",
+		"d",
 		"",
 		"file connection to HLF",
 	)
@@ -60,7 +60,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(
 		&utils.Org2,
 		"org2",
-		"o2",
+		"p",
 		"",
 		"organization HLF",
 	)
@@ -68,7 +68,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(
 		&utils.User2,
 		"user2",
-		"u2",
+		"v",
 		"",
 		"user HLF",
 	)
