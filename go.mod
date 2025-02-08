@@ -1,6 +1,6 @@
 module github.com/anoideaopen/ifc
 
-go 1.23.5
+go 1.23.6
 
 require (
 	github.com/anoideaopen/glog v0.0.3
