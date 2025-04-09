@@ -65,7 +65,7 @@ func TxsProc(
 		}
 
 		var resp channel.Response
-		for j := 0; j < defaultTrysCount; j++ {
+		for range defaultTrysCount {
 			if resp, err = chClient.Execute(channel.Request{
 				ChaincodeID: utils.ChaincodeACL,
 				Fcn:         string(cis.GetChaincodeSpec().GetInput().GetArgs()[0]),
