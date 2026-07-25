@@ -1,10 +1,10 @@
 package blocks
 
 import (
-	"github.com/golang/protobuf/proto" //nolint:staticcheck
-	"github.com/hyperledger/fabric-protos-go/common"
-	"github.com/hyperledger/fabric-protos-go/peer"
+	"github.com/hyperledger/fabric-protos-go-apiv2/common"
+	"github.com/hyperledger/fabric-protos-go-apiv2/peer"
 	"github.com/pkg/errors"
+	"google.golang.org/protobuf/proto"
 )
 
 // UnmarshalEnvelope unmarshal bytes to an Envelope structure.
